@@ -33,17 +33,16 @@ app.post('/', async (req, res, next) => {
 	const { url } = Object.assign({}, req.query, req.body, req.files)
 	let browser
 	try {
-		const options = {
-					args: chrome.args,
-					executablePath: await chrome.executablePath,
-					headless: chrome.headless
-			  }
-		// 本地
-			// {
-			// 		args: [],
-			// 		executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-			//   }
-		browser = await puppeteer.launch(options)
+		const browser = await puppeteer.launch(
+      chrome
+        ? {
+            args: [...chrome.args, '--hide-scrollbars'],
+            defaultViewport: chrome.defaultViewport,
+            executablePath: await chrome.executablePath,
+            headless: true,
+          }
+        : {}
+    );
 		const page = await browser.newPage()
 		// 导航到目标网页
 		await page.goto(url)
@@ -63,14 +62,13 @@ app.post('/', async (req, res, next) => {
 			}
 		}, url)
 
+		await browser.close()
 		res.send({ code: 200, ...result })
 	} catch (error) {
 		res.send({
 			code: 500,
 			msg: error.message
 		})
-	} finally {
-		if (browser) await browser.close()
 	}
 })
 
