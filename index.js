@@ -9,7 +9,7 @@
  */
 const express = require('express')
 const puppeteer = require('puppeteer-core')
-const chromium = require('chrome-aws-lambda')
+const chrome = require('chrome-aws-lambda')
 
 const app = express()
 const port = Number(process.env.PORT || '5555')
