@@ -2,13 +2,14 @@
  * @Author: iuukai
  * @Date: 2023-09-11 16:50:33
  * @LastEditors: iuukai
- * @LastEditTime: 2023-09-11 22:09:07
- * @FilePath: \node\cheerio\index.js
+ * @LastEditTime: 2023-09-21 11:32:19
+ * @FilePath: \node\puppeteer\index.js
  * @Description:
  * @QQ/微信: 790331286
  */
 const express = require('express')
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-core')
+const chromium = require('chrome-aws-lambda')
 
 const app = express()
 const port = Number(process.env.PORT || '5555')
@@ -30,12 +31,22 @@ app.use((req, res, next) => {
 
 app.post('/', async (req, res, next) => {
 	const { url } = Object.assign({}, req.query, req.body, req.files)
-
+	let browser
 	try {
-		const browser = await puppeteer.launch({ headless: 'new' })
+		const options = process.env.FUNCTION_NAME
+			? {
+					args: chrome.args,
+					executablePath: await chrome.executablePath,
+					headless: chrome.headless
+			  }
+			: {
+					args: [],
+					executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+			  }
+		browser = await puppeteer.launch(options)
 		const page = await browser.newPage()
 		// 导航到目标网页
-		await page.goto(url, { waitUntil: 'networkidle2' })
+		await page.goto(url)
 
 		const result = await page.evaluate(url => {
 			const $titleEl = document.querySelector('title')
@@ -53,12 +64,13 @@ app.post('/', async (req, res, next) => {
 		}, url)
 
 		res.send({ code: 200, ...result })
-		await browser.close()
 	} catch (error) {
 		res.send({
 			code: 500,
 			msg: error.message
 		})
+	} finally {
+		if (browser) await browser.close()
 	}
 })
 
