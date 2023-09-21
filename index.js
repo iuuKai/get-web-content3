@@ -33,16 +33,16 @@ app.post('/', async (req, res, next) => {
 	const { url } = Object.assign({}, req.query, req.body, req.files)
 	let browser
 	try {
-		const options = process.env.FUNCTION_NAME
-			? {
+		const options = {
 					args: chrome.args,
 					executablePath: await chrome.executablePath,
 					headless: chrome.headless
 			  }
-			: {
-					args: [],
-					executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-			  }
+		// 本地
+			// {
+			// 		args: [],
+			// 		executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+			//   }
 		browser = await puppeteer.launch(options)
 		const page = await browser.newPage()
 		// 导航到目标网页
