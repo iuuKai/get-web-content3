@@ -1,7 +1,6 @@
 # get-web-content
-express + puppeteer 根据网址获取网站 title、icon 等数据
 
-!!! **无法部署到 Render、Vercel 等平台...**
+express + puppeteer 根据网址获取网站 title、icon 等数据
 
 ```bash
 # npm

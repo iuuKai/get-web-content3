@@ -63,6 +63,5 @@ app.post('/', async (req, res, next) => {
 })
 
 app.listen(port, function () {
-	console.log(`app is listening at port ${port}`)
 	console.log(`server running @ http://${host ? host : 'localhost'}:${port}`)
 })
